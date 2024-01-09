@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #startButton {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #timer-label {
+      position: fixed;
+      top: 10px;
+      right: 150px;
+      font-size: 16px;
+    }
+    
+    .quiz-container {
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .question-container {
+      margin: 20px 0;
+      display: none;
+    }
+
+    .options-container {
+      margin-top: 10px;
+      text-align: left;
+    }
+
+    .options-container input {
+      margin-bottom: 10px;
+    }
+
+    .options-container button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .answer-feedback {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    #feedback-container {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    a {
+      position: fixed;
+      top: 10px;
+      left: 7%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      color: #333;
+    }
+
+    h1 {
+      position: fixed;
+      top: 150px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      color: #333;
+    }
+    p {
+      position: fixed;
+      top: 180px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      color: #333;
+      
+    }
+    
+  </style>
+  <script>
+    var currentQuestion = 0;
+    var timer;
+    var score = 0;
+
+    function startQuiz() {
+      startTimer(60); // Set timer for 1 minute (60 seconds)
+      showNextQuestion();
+    }
+
+    function startTimer(seconds) {
+      var timerLabel = document.getElementById('timer-label');
+
+      clearInterval(timer);
+
+      timer = setInterval(function() {
+        seconds--;
+
+        if (seconds >= 0) {
+          timerLabel.textContent = 'Time left: ' + seconds + ' seconds';
+        } else {
+          clearInterval(timer);
+          timerLabel.textContent = 'Time\'s up!';
+          showNextQuestion();
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      var timerLabel = document.getElementById('timer-label');
+      timerLabel.textContent = '';
+      clearInterval(timer);
+    }
+
+    function showNextQuestion() {
+      var questions = document.querySelectorAll('.question-container');
+      var feedbackContainer = document.getElementById('feedback-container');
+
+      // Hide current question
+      if (currentQuestion > 0) {
+        questions[currentQuestion - 1].style.display = 'none';
+      }
+
+      // Show next question or end the quiz
+      if (currentQuestion < questions.length) {
+        questions[currentQuestion].style.display = 'block';
+        currentQuestion++;
+      } else {
+        alert('Quiz completed! Your score: ' + score);
+        currentQuestion = 0;
+        resetTimer();
+        printScore();
+      }
+    }
+
+    function printScore() {
+      var feedbackContainer = document.getElementById('feedback-container');
+      var feedback = document.createElement('div');
+      feedback.className = 'answer-feedback';
+      feedback.textContent = 'Your final score is: ' + score;
+      feedbackContainer.innerHTML = '';
+      feedbackContainer.appendChild(feedback);
+    }
+
+    function checkAnswer(questionNumber) {
+      var selectedOption = document.querySelector('input[name="question' + questionNumber + '"]:checked');
+      var feedbackContainer = document.getElementById('feedback-container');
+
+      if (selectedOption) {
+        // Check if the selected option is correct
+        var isCorrect = selectedOption.value.toLowerCase() === getCorrectAnswer(questionNumber).toLowerCase();
+        if (isCorrect) {
+          score++;
+        }
+
+        var feedback = document.createElement('div');
+        feedback.className = 'answer-feedback';
+        feedback.textContent = 'Your answer for question ' + questionNumber + ': ' + (isCorrect ? 'Correct' : 'Incorrect');
+        feedbackContainer.innerHTML = '';
+        feedbackContainer.appendChild(feedback);
+
+        // Show feedback for 2 seconds before moving to the next question
+        setTimeout(function () {
+          feedbackContainer.innerHTML = '';
+          showNextQuestion();
+        }, 2000);
+      } else {
+        alert('Please select an answer for question ' + questionNumber);
+      }
+    }
+
+    function getCorrectAnswer(questionNumber) {
+      // Define correct answers for each question
+      if (questionNumber === 1) {
+        return 'Strings';
+      } else if (questionNumber === 2) {
+        return 'quotes';
+      } else if (questionNumber === 3) {
+        return 'numbers and Strings';
+      } else if (questionNumber === 4) {
+        return 'commas';
+      } else if (questionNumber === 5) {
+        return 'JavaScript';
+      }
+      // Add more cases for additional questions if needed
+    }
+
+
+    function startQuiz() {
+      // Hide the "Start Quiz" button
+      var startButton = document.getElementById('startButton');
+      startButton.style.display = 'none';
+
+      startTimer(60); // Set timer for 1 minute (60 seconds)
+      showNextQuestion();
+    }
+
+  </script>
+</head>
+<body>
+    <a>View Height Score</a>
+
+    
+
+    <button id="startButton" onclick="startQuiz()">Start Quiz</button>
+
+    <div id="timer-label"   >
+        <h1>Coding Quiz Challenge</h1>
+        <div class="p3">
+        <p>Try to answer the following code-related questions within the time limit.<br>
+        Keep in mind that Incorrect answer will penalize your score/time <br>
+        by ten seconds!</p>
+    </div>
+        
+    </div>
+
+  <div class="question-container">
+    <p>Question 1: Commonly used data types DO Not Include</p>
+    <div class="options-container">
+      <input type="radio" name="question1" value="Strings"> Strings<br>
+      <input type="radio" name="question1" value="booleans"> Booleans<br>
+      <input type="radio" name="question1" value="alerts"> Alerts<br>
+      <input type="radio" name="question1" value="numbers"> Numbers<br>
+      <button onclick="checkAnswer(1)">Submit Answer</button>
+    </div>
+  </div>
+
+  <div class="question-container">
+    <p>Question 2: The Condition in an if / else Statement is enclosed With ______.</p>
+    <div class="options-container">
+      <input type="radio" name="question2" value="quotes"> Quotes<br>
+      <input type="radio" name="question2" value="curly brackets"> Curly Brackets<br>
+      <input type="radio" name="question2" value="parenthesis"> Parenthesis<br>
+      <input type="radio" name="question2" value="Square brackets"> Square Brackets<br>
+      <button onclick="checkAnswer(2)">Submit Answer</button>
+    </div>
+  </div>
+
+  <div class="question-container">
+    <p>Question 3: Arrays in JavaScript can be used to Store _______.</p>
+    <div class="options-container">
+      <input type="radio" name="question3" value="numbers and Strings"> Numbers and Strings<br>
+      <input type="radio" name="question3" value="other arrays"> Other Arrays<br>
+      <input type="radio" name="question3" value="booleans"> Booleans<br>
+      <input type="radio" name="question3" value="all of the above"> All of the Above<br>
+      <button onclick="checkAnswer(3)">Submit Answer</button>
+    </div>
+  </div>
+
+  <div class="question-container">
+    <p>Question 4: String values must be enclosed within _______ When being assigned to variables.</p>
+    <div class="options-container">
+      <input type="radio" name="question4" value="commas"> Commas<br>
+      <input type="radio" name="question4" value="curly brackets"> Curly Brackets<br>
+      <input type="radio" name="question4" value="quotes"> Quotes<br>
+      <input type="radio" name="question4" value="parenthesis"> Parenthesis<br>
+      <button onclick="checkAnswer(4)">Submit Answer</button>
+    </div>
+  </div>
+
+  <div class="question-container">
+    <p>Question 5: A very useful tool used during development and debugging for printing content to the debugger is:</p>
+    <div class="options-container">
+      <input type="radio" name="question5" value="JavaScript"> JavaScript<br>
+      <input type="radio" name="question5" value="terminal/bash"> Terminal/Bash<br>
+      <input type="radio" name="question5" value="for loops"> For Loops<br>
+      <input type="radio" name="question5" value="console.log"> Console.log<br>
+      <button onclick="checkAnswer(5)">Submit Answer</button>
+    </div>
+  </div>
+
+  <div id="feedback-container"></div>
+</body>
+</html>
